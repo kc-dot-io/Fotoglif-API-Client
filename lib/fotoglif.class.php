@@ -31,7 +31,7 @@
  * 
  *******************************************************************************/
 
-class fotoglif extends application
+class fotoglif 
 {
 	function fotoglif($cli=false){ 
 		define("_CLI",$cli);
@@ -41,17 +41,69 @@ class fotoglif extends application
 		define("_VERSION","sLajax.com - Fotoglif PHP API Client");
 	}
 	
-	function getRecent($page="0"){
+	function getUser($id="2"){
+		return $this->sendRequest("user/get","user_uid=".$id);
+	}
+
+    function getUserDetails($id="2"){
+        return $this->sendRequest("user/getUserDetails","user_uid=".$id);
+    }
+
+    function searchByUsername($name="kyle@digisphereinc.com"){
+        return $this->sendRequest("user/searchByUsername","acct_name=".$name);
+    }
+
+    function searchByEmail($email="kyle@digisphereinc.com"){
+        return $this->sendRequest("user/searchByEmail","email=".$email);
+    }
+
+    function getImage($id="2"){
+        return $this->sendRequest("image/get","image_uid=".$id);
+    }
+
+	function getImagesByRecent($page="0"){
 		return $this->sendRequest("image/recent","page=".$page);
 	}
 
+    function getImagesByUser($uid='2',$page="0"){
+        return $this->sendRequest("image/byUser","user_uid=".$uid."&page=".$page);
+    }
+
+    function getImagesByAlbum($aid='2',$page="0"){
+        return $this->sendRequest("image/byAlbum","album_uid=".$aid."&page=".$page);
+    }
+
+    function getImagesByCategory($cid="sports",$page="0"){
+        return $this->sendRequest("image/byCategory","category_id=".$cid."&page=".$page);
+    }
+
+    function getAlbum($id="2"){
+        return $this->sendRequest("album/get","album_uid=".$id);
+    }
+
+    function getAlbumByRecent($page="0"){
+        return $this->sendRequest("album/recent","page=".$page);
+    }
+
+    function getAlbumByUser($uid='2',$page="0"){
+        return $this->sendRequest("album/byUser","user_uid=".$uid."&page=".$page);
+    }
+
+    function getAlbumByImage($iid='2',$page="0"){
+        return $this->sendRequest("album/byImage","uid=".$iid."&page=".$page);
+    }
+
+    function getAlbumByCategory($cid="sports",$page="0"){
+        return $this->sendRequest("album/byCategory","category_id=".$cid."&page=".$page);
+    }
+
+    function getAlbumByHash($hash="73gw1iaokr5q"){
+        return $this->sendRequest("album/byHash","album_hash=".$ash);
+    }
+
+
 	function sendRequest($append="",$vars=false,$callback=false) {
 		return $this->apiRequest('GET', $append, $vars, $callback);
-	}
-
-	function setApiCallback($callback,$static=false){
-		$this->curlCallback = $callback;
-		if($static) $this->curlStatic=true;
 	}
 
 	function makeURL($append="",$vars=""){
@@ -60,9 +112,6 @@ class fotoglif extends application
 	}
 
 	function apiRequest($method, $append="", $vars="", $callback="postProcess") {
-		$this->setApiCallback($callback);
-
-#		echo  $this->makeURL($append,$vars);
 
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $this->makeURL($append,$vars));
@@ -75,35 +124,23 @@ class fotoglif extends application
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, TRUE);
 		curl_setopt($ch, CURLOPT_USERAGENT, _VERSION);
 
-		if ($method == 'POST') {
-			curl_setopt($ch, CURLOPT_POST, 1);
-			if($vars) curl_setopt($ch, CURLOPT_POSTFIELDS, $vars);
-		}
 		$data = curl_exec($ch);
 		curl_close($ch);
 		if ($data) {
-			if ($this->curlCallback)
-			{
-				$callback = $this->curlCallback;
-				if(!$this->curlStatic)$this->curlCallback = false;
-				return $this->$callback($data);
-			} else {
-				return $data;
-			}
+			if ($callback) return $this->$callback($data);
+			else return json_decode($data);
 		} else {
 			return curl_error($ch);
 		}
 	}
 
 	function postProcess($json){
-		return $json;
+		return json_decode($json);
+	}
+
+	function __toString(){
+			return "";
 	}
 }
 
-/* EXAMPLE:
-
-   	$f=new fotoglif();
-   	echo $f->getRecent();
-
- */
 ?> 
