@@ -101,7 +101,6 @@ class fotoglif
 				return $this->sendRequest("album/byHash","album_hash=".$ash);
 		}
 
-
 		function sendRequest($append="",$vars=false,$callback=false) {
 				return $this->apiRequest('GET', $append, $vars, $callback);
 		}
