@@ -102,7 +102,7 @@ class fotoglif
 		}
 
 		function sendRequest($append="",$vars=false,$callback=false) {
-				return $this->apiRequest('GET', $append, $vars, $callback);
+				return $this->apiRequest($append, $vars, $callback);
 		}
 
 		function makeURL($append="",$vars=""){
@@ -110,7 +110,7 @@ class fotoglif
 				return _APIURL.$append.'?api_key='._APIKEY.'&api_sig='.md5($api_sig).'&now='.time().'&'.$vars;
 		}
 
-		function apiRequest($method, $append="", $vars="", $callback="postProcess") {
+		function apiRequest($append="", $vars="", $callback="postProcess") {
 
 				$ch = curl_init();
 				curl_setopt($ch, CURLOPT_URL, $this->makeURL($append,$vars));
